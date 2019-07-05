@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const app = require("./app");
 
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://erick:erick123@ds213705.mlab.com:13705/heroku_gq8bqg39', {useNewUrlParser: true}).then(()=>{
+mongoose.connect('mongodb://kinal:kinal123@ds213705.mlab.com:13705/heroku_gq8bqg39', {useNewUrlParser: true}).then(()=>{
     console.log("La base de datos esta corriendo correctamente");
 
     app.set('port', process.env.PORT || 3000);
