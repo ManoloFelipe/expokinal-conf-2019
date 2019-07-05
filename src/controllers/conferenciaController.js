@@ -1,6 +1,7 @@
 'use strict'
 
 var Charla = require('../models/conferencia');
+var User = require('../models/user');
 
 
 function registrarCharla(req, res) {
@@ -17,6 +18,7 @@ function registrarCharla(req, res) {
         charla.capacidad = params.numeroAsiento;
         charla.image = params.image;
         charla.ocupados = [];
+        charla.confirmado = 0;
         Charla.find({$or: [
             {nombreCharla: charla.nombreCharla}
         ]}).exec((err, charlas)=>{
@@ -112,11 +114,11 @@ function ocuparAsiento(req,res) {
     var userId = req.user.sub
 
     Charla.findById(charlaId, (err,enc)=>{
-        
+
         if (err) return res.status(500).send({message: 'error en la peticion'});
         if(!enc) return res.status(404).send({message: 'la charla no existe'});
         if(enc.capacidad == 0) return res.status(200).send({message: 'Evento lleno, por favor, busque otro'});
-        
+
         var nuevosOcupados = enc.ocupados
         var nuevaCapacidad = enc.capacidad
 
@@ -132,8 +134,49 @@ function ocuparAsiento(req,res) {
             if(err) return res.status(500).send({message: 'error en la peticion'});
 
             if(!newOcupado) return res.status(404).send({message: 'no se ha podido generar una inscripcion'});
-            
+
             return res.status(200).send({message: 'inscripcion generada exitosamente'});
+        })
+    })
+}
+
+function confirmarEntrada(req, res) {
+    var charlaId = req.params.id;
+    var userId = req.params.user;
+    var registrado = false;
+
+    Charla.findById(charlaId, (err,enc)=>{
+        
+        if (err) return res.status(500).send({message: 'error en la peticion'});
+        if(!enc) return res.status(404).send({message: 'la charla no existe'});
+    
+        if(enc.ocupados.length == 0){
+            return res.status(200).send({message: 'esta conferencia esta vacia'});
+        }else{
+            for (let i = 0; i < enc.ocupados.length; i++) {                    
+                if(enc.ocupados[i] == userId){
+                    registrado = true
+                    break;
+                }
+            }   
+        }
+        
+        if(!registrado){
+            return res.status(200).send({message: 'no estar registrado para esta conferencia, por favor registrarse en la pagina "expokinal.com/conferencias"'});
+        }else{            
+            for (let o = 0; o < enc.llegados.length+1; o++) {
+                if(enc.llegados[o] == userId){
+                    return res.status(200).send({message: 'ya ha confirmado la entrada, pase'});
+                }                   
+            }
+        }
+        Charla.findByIdAndUpdate(charlaId, { $addToSet: {llegados: userId}, $inc: {confirmado: 1}},{new: true}, (err, newOcupado)=>{
+            if(err) return res.status(500).send({message: 'error en la peticion'});
+
+            if(!newOcupado) return res.status(404).send({message: 'error al confirmar asistencia'});
+            
+            return res.status(200).send({message: 'gracias por presentarse, pase'});
+
         })
     })
 }
@@ -144,5 +187,6 @@ module.exports = {
     listarCharlas,
     eliminarCharla,
     buscarId,
-    ocuparAsiento
+    ocuparAsiento,
+    confirmarEntrada
 }
