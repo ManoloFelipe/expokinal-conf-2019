@@ -29,7 +29,7 @@ api.put('/editar-usuario/:id', md_auth.ensureAuth, UserController.editarUsuario)
 api.post('/charla/register', CharlaController.registrarCharla);
 api.put('/charla/edit/:id', CharlaController.editarCharla);
 api.put('/charla/occupy/:id',md_auth.ensureAuth ,CharlaController.ocuparAsiento);
-api.put('/charla/check/:id',md_auth.ensureAuth ,CharlaController.confirmarEntrada);
+api.get('/charla/check/:id',md_auth.ensureAuth ,CharlaController.confirmarEntrada);
 api.get('/charla/list', CharlaController.listarCharlas);
 api.get('/charla/search/:id', CharlaController.buscarId);
 api.delete('/charla/delete/:id', CharlaController.eliminarCharla);
