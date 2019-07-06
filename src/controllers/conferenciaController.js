@@ -145,7 +145,8 @@ function confirmarEntrada(req, res) {
     var userId = req.params.user;
     var registrado = false;
 
-    Charla.findByIdAndUpdate(charlaId, { $addToSet: {llegados: userId}, $inc: {confirmado: 1}},{new: true}, (err, newOcupado)=>{
+    Charla.findByIdAndUpdate(charlaId, {$inc: {confirmado: 1}},{new: true}, (err, newOcupado)=>{
+        console.log(err)
         if(err) return res.status(500).send({message: 'error en la peticion'});
 
         if(!newOcupado) return res.status(404).send({message: 'error al confirmar asistencia'});
