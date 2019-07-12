@@ -4,17 +4,18 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
 var CharlaSchema = Schema({
-    nombreCharla:String,
-	descripcion: String,
+    nombreCharla: String,
+    descripcion: String,
     comunicador: String,
     salon: String,
-    numeroAsiento:Number,
-    hora:Date,
+    numeroAsiento: Number,
+    hora: Date,
     fecha: String,
     capacidad: Number,
     image: String,
     confirmado: Number,
-    ocupados: [{type: Schema.ObjectId, ref: 'User'}]
+    llegados: [String],
+    ocupados: [String]
 });
 
 module.exports = mongoose.model('Conferencia', CharlaSchema);
