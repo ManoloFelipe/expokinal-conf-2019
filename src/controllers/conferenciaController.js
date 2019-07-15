@@ -198,6 +198,23 @@ function cancelarEntrada(req, res) {
     })
 }
 
+function notificacion(req, res) {
+    var charlaId = req.params.id;
+    
+    Charla.findById(charlaId,(err, enc)=>{
+        if (err) return res.status(500).send({ message: 'error en la peticion' });
+        if (!enc) return res.status(404).send({ message: 'la charla no existe' });
+                
+        User.find({_id : enc.ocupados}, (err, encontrados)=>{
+            
+            if (err) return res.status(500).send({ message: 'error en la peticion' });
+            if (!enc) return res.status(404).send({ message: 'la charla no existe' });            
+
+            return res.status(200).send({ message: encontrados });
+        })
+    })
+}
+
 module.exports = {
     registrarCharla,
     editarCharla,
@@ -206,5 +223,6 @@ module.exports = {
     buscarId,
     ocuparAsiento,
     confirmarEntrada,
-    cancelarEntrada
+    cancelarEntrada,
+    notificacion
 }

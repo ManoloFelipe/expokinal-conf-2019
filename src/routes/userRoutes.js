@@ -33,5 +33,6 @@ api.put('/charla/unoccupy/:id', md_auth.ensureAuth, CharlaController.cancelarEnt
 api.put('/charla/check/:id', md_auth.ensureAuth, CharlaController.confirmarEntrada);
 api.get('/charla/list', CharlaController.listarCharlas);
 api.get('/charla/search/:id', CharlaController.buscarId);
+api.get('/charla/noti/:id', CharlaController.notificacion);
 api.delete('/charla/delete/:id', CharlaController.eliminarCharla);
 module.exports = api;
