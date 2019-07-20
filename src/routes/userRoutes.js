@@ -25,6 +25,7 @@ api.post('/login', UserController.login);
 api.post('/subir-imagen-usuario/:id', [md_auth.ensureAuth, md_subir], UserController.subirImagen);
 api.get('/obtener-imagen-usuario/:nombreImagen', UserController.obtenerImagen)
 api.put('/editar-usuario/:id', md_auth.ensureAuth, UserController.editarUsuario)
+api.put('/email/:correo/:codigo', UserController.verificarEmail)
 
 api.post('/charla/register', CharlaController.registrarCharla);
 api.put('/charla/edit/:id', CharlaController.editarCharla);
