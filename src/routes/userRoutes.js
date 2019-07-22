@@ -3,6 +3,7 @@
 var express = require('express');
 var UserController = require('../controllers/userController');
 var CharlaController = require('../controllers/conferenciaController');
+var CorreoController = require('../controllers/correoController');
 var md_auth = require('../middlewares/autheticated');
 
 //SUBIR IMAGEN
@@ -19,7 +20,6 @@ api.put('/productoVendido/:productoId', md_auth.ensureAuth, UserController.Produ
 
 api.get('/ejemplo', md_auth.ensureAuth, UserController.ejemplo);
 api.get('/usario/:id', md_auth.ensureAuth, UserController.getUser);
-api.put('/actualizarContra/:contraN/:contraA', md_auth.ensureAuth, UserController.restaurarContrasena);
 api.get('/usuarios', UserController.getUsers);
 api.post('/registrar', UserController.registrar);
 api.post('/login', UserController.login);
@@ -37,4 +37,10 @@ api.get('/charla/list', CharlaController.listarCharlas);
 api.get('/charla/search/:id', CharlaController.buscarId);
 api.get('/charla/noti/:id', CharlaController.notificacion);
 api.delete('/charla/delete/:id', CharlaController.eliminarCharla);
+
+
+//CORREO
+api.post('/correo', md_auth.ensureAuth, CorreoController.correoRestablecerPassword);
+api.post('/correo/:hora/:minutos', CharlaController.lanzarSiempreALaHora);
+
 module.exports = api;
