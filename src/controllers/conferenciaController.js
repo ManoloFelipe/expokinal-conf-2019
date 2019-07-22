@@ -200,20 +200,49 @@ function cancelarEntrada(req, res) {
 
 function notificacion(req, res) {
     var charlaId = req.params.id;
-    
-    Charla.findById(charlaId,(err, enc)=>{
+
+    Charla.findById(charlaId, (err, enc) => {
         if (err) return res.status(500).send({ message: 'error en la peticion' });
         if (!enc) return res.status(404).send({ message: 'la charla no existe' });
-                
-        User.find({_id : enc.ocupados}, (err, encontrados)=>{
-            
+
+        User.find({ _id: enc.ocupados }, (err, encontrados) => {
+
             if (err) return res.status(500).send({ message: 'error en la peticion' });
-            if (!enc) return res.status(404).send({ message: 'la charla no existe' });            
+            if (!enc) return res.status(404).send({ message: 'la charla no existe' });
 
             return res.status(200).send({ message: encontrados });
         })
     })
 }
+
+
+
+function tarea() {
+    console.log('acá va la tarea LLEGO', new Date());
+}
+
+function lanzarSiempreALaHora(req, res) {
+    var hora = req.params.hora;
+
+    var minutos = req.params.minutos;
+    console.log(hora, minutos)
+    var ahora = new Date();
+    console.log('lanzado', ahora);
+    var momento = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), hora, minutos);
+    if (momento <= ahora) { // la hora era anterior a la hora actual, debo sumar un día
+        momento = new Date(momento.getTime() + 1000 * 60 * 60 * 24);
+    }
+    console.log('para ser ejecutado en', momento, momento.getTime() - ahora.getTime());
+
+    setTimeout(function() {
+        tarea();
+
+        console.log("LLEGO")
+    }, momento.getTime() - ahora.getTime());
+
+}
+
+// lanzarSiempreALaHora(21, 10, tarea);
 
 module.exports = {
     registrarCharla,
@@ -224,5 +253,6 @@ module.exports = {
     ocuparAsiento,
     confirmarEntrada,
     cancelarEntrada,
-    notificacion
+    notificacion,
+    lanzarSiempreALaHora
 }
