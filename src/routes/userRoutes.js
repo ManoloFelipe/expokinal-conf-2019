@@ -19,6 +19,7 @@ api.put('/productoVendido/:productoId', md_auth.ensureAuth, UserController.Produ
 
 api.get('/ejemplo', md_auth.ensureAuth, UserController.ejemplo);
 api.get('/usario/:id', md_auth.ensureAuth, UserController.getUser);
+api.put('/actualizarContra/:contraN/:contraA', md_auth.ensureAuth, UserController.restaurarContrasena);
 api.get('/usuarios', UserController.getUsers);
 api.post('/registrar', UserController.registrar);
 api.post('/login', UserController.login);

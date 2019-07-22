@@ -170,7 +170,6 @@ function registrar(req, res) {
     var params = req.body;
 
     if (params.nombre && params.email && params.password) {
-        user.carnet = params.carnet;
         user.nombre = params.nombre;
         user.email = params.email;
         user.rol = 'ROLE_USUARIO';
@@ -598,6 +597,35 @@ function verificarEmail(req, res) {
     });
 }
 
+function restaurarContrasena(req,res){
+    var userId = req.user.sub;
+    var contraNueva = req.params.contraN;
+    var contraAntigua = req.params.contraA;
+
+    User.findById(userId, (err,enc)=>{
+        if (err) return res.status(500).send({ message: 'Error al buscar usuario' });
+
+        if (!enc)return res.status(404).send({ message: 'Usuario no encontrado' });
+
+        bcrypt.hash(contraNueva, null, null, (err, hash)=>{
+            if (err) return res.status(500).send({ message: 'Error al encriptar la contraseña' });
+            
+            bcrypt.hash(contraAntigua, null, null, (err, hash2)=>{
+
+            if (hash2 != enc.password ) if (err) return res.status(200).send({ message: 'La contraseña antigua no coincide' });
+
+                User.findByIdAndUpdate(userId, {password: hash}, {new: true}, (err,nueContra)=>{
+                    if (err) return res.status(500).send({ message: 'Error al guardar nueva contraseña' });
+
+                    if (!nueContra)return res.status(404).send({ message: 'Usuario no encontrado' });
+
+                    res.status(200).send({ message: 'Contraseña actualizada' })
+                })
+            })
+        })
+    })   
+}
+
 
 module.exports = {
     ejemplo,
@@ -612,5 +640,6 @@ module.exports = {
     agregarProductoVendidoPorUsuario,
     ProductoVendido,
     getProductos,
-    verificarEmail
+    verificarEmail,
+    restaurarContrasena
 }
