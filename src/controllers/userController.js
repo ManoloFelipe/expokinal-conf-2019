@@ -2,6 +2,7 @@
 
 var bcrypt = require('bcrypt-nodejs');
 var User = require('../models/user');
+var Conferencia = require('../models/conferencia');
 var Producto = require('../models/productos')
 var jwt = require('../services/jwt');
 var path = require('path');
@@ -626,6 +627,23 @@ function restaurarContrasena(req,res){
     })   
 }
 
+function eliminar(req, res) {
+    var userId = req.params.id;
+
+    User.findByIdAndDelete(userId, (err, elim)=>{
+        if (err) return res.status(500).send({ message: 'Error al eliminar usuario' });
+
+        if (!nueContra)return res.status(404).send({ message: 'Usuario no encontrado' });
+
+        Conferencia.find({$or: { llegados: userId, ocupados: userId }}, (err, enc)=>{
+            if (err) return res.status(500).send({ message: 'Error al eliminar usuario' });
+
+            if (!nueContra)return res.status(200).send({ message: 'Usuario no registrado a ninguna charla' });
+
+            return res.status(200).send({ message: enc });
+        })
+    })
+}
 
 module.exports = {
     ejemplo,
