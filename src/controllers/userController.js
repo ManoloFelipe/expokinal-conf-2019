@@ -639,7 +639,7 @@ function eliminar(req, res) {
       if (err) return res.status(500).send({ message: 'Error al eliminar usuario' });
 
       if (enc){
-        Conferencia.updateMany(enc.id, {$pull:{llegados:{userId}, ocupados: {userId}}}, (err, eli)=>{
+        Conferencia.updateMany({_id:enc.id}, {$pull:{llegados:userId, ocupados: userId}}, (err, eli)=>{
           if (err) return res.status(500).send({ message: 'Error al eliminar usuario de conferencias' });
 
           if (!eli)return res.status(404).send({ message: 'Usuario no encontrado' });
@@ -652,7 +652,7 @@ function eliminar(req, res) {
           if (err) return res.status(500).send({ message: 'Error al eliminar usuario' });
 
           if (enc){
-            Conferencia.updateMany(enc.id, {$pull:{ocupados: {userId}}}, (err, eli)=>{
+            Conferencia.updateMany({_id:enc.id}, {$pull:{ocupados: {userId}}}, (err, eli)=>{
               if (err) return res.status(500).send({ message: 'Error al eliminar usuario de conferencias' });
     
               if (!eli)return res.status(404).send({ message: 'Usuario no encontrado' });

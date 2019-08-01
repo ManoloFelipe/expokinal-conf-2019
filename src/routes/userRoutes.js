@@ -7,6 +7,7 @@ var CorreoController = require('../controllers/correoController');
 var carrouselController= require('../controllers/carrouselController')
 var TextoController =require('../controllers/textoController')
 var historiaController =require('../controllers/historiaController')
+var conferencistaController =require('../controllers/conferencistaController')
 var md_auth = require('../middlewares/autheticated');
 
 //SUBIR IMAGEN
@@ -66,6 +67,17 @@ api.put('/editar-historia/:id',historiaController.editHistoria);
 api.get('/listar-historia',historiaController.listarHistorias);
 api.get('/obtener-imagen/:imageFile', historiaController.getImageFile);
 api.post('/subir-image/:id', [md_auth.ensureAuth, md_subir] ,historiaController.subirImagen)
+
+//CONFERENCISTAS/COMUNICADORES
+api.post('/conferencista/agregar',conferencistaController.addConferencista);
+api.put('/conferencista/editar/:id',conferencistaController.editConferencista);
+api.post('/conferencista/red/:id/:url/:redSocial',conferencistaController.addRed);
+api.delete('/conferencista/eliminar/:id',conferencistaController.deleteConferencista);
+api.get('/conferencista/getAll', conferencistaController.listarComunicadores);
+api.get('/conferencista/get/:id', conferencistaController.listarComunicador);
+api.post('/conferencista/', [md_auth.ensureAuth, md_subir] ,conferencistaController.subirImagen)
+api.get('/obtener-imagen/:imageFile', conferencistaController.getImageFile);
+
 //CORREO
 api.post('/correo', md_auth.ensureAuth, CorreoController.correoRestablecerPassword);
 api.post('/correo/:hora/:minutos', CharlaController.lanzarSiempreALaHora);

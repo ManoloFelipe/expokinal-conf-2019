@@ -1,6 +1,7 @@
 'use strict'
 
 var Conferencista = require('../models/conferencista');
+var Conferencia = require('../models/conferencia');
 var path = require('path');
 var fs = require('fs');
 
@@ -59,40 +60,89 @@ function editConferencista(req, res) {
     })
 }
 
-function addEditRedes(req, res) {
+function addRed(req, res) {
     var conferId = req.params.id;
-    var params = req.body;
+    var urlN = req.params.url;
+    var redN = req.params.redSocial;
 
-    Conferencista.findByIdAndUpdate(conferId , {}, {new:true},(err, confEdit)=>{
+    Conferencista.findOne({_id: conferId, redes:{$elemMatch:{red: redN}}}, (err, enc)=>{
         if(err) return res.status(500).send({message: 'error en la peticion'});
 
-        if(!confEdit) return res.status(404).send({message: 'no se a podido actualizar el conferencista'});
+        if(!enc) {
+            Conferencista.findByIdAndUpdate(conferId, {
+                $push: {
+                    redes:{
+                        red: redN,
+                        url: urlN
+                    }
+                }
+            },
+                {new:true}, (err,enc)=>{
+                    if (err) return res.status(500).send({ message: 'error en la peticion del usuario al agregar red' })
 
-        return res.status(200).send({carrousel: confEdit});
+                    if (!enc) return res.status(200).send({ message: 'red no añadido a usuario' })
+                    
+                    return res.status(200).send({ message: 'Red registrada' })
+                })
+        }else{
+            Conferencista.findOneAndUpdate({_id: conferId, redes:{$elemMatch:{red: redN}}}, {"redes.$.url": urlN},{new: true},(err, act)=>{
+                if (err) return res.status(500).send({ message: 'error en la peticion del usuario al actualizar red' })
+
+                if (!act) return res.status(200).send({ message: 'red no actualizada' })
+                    
+                return res.status(200).send({ message: 'Red actualizada'})
+            })
+        }
     })
 }
 
-function eliminarcarrousel(req, res) {
-    var carrouselId = req.params.id;
+function deleteConferencista(req, res) {
+    var confId = req.params.id;
 
-    Conferencista.findByIdAndDelete(carrouselId,(err, carrouselEliminada)=>{
+    Conferencista.findByIdAndDelete(confId,(err, confEliminado)=>{
         if(err) return res.status(500).send({message: 'error en la peticion'});
 
-        if(!carrouselEliminada) return res.status(404).send({message: 'no se a podido eliminar el evento'});
+        if(!confEliminado) return res.status(404).send({message: 'no se a podido eliminar el evento'});
 
-        return res.status(200).send({carrousel: carrouselEliminada});
+        Conferencia.findOne( {comunicador: confId}, (err, enc)=>{
+            if (err) return res.status(500).send({ message: 'Error al eliminar usuario' });
+      
+            if (enc){
+              Conferencia.findByIdAndUpdate(enc.id, {$pull:{comunicador:confId}},{new : true}, (err, eli)=>{
+                if (err) return res.status(500).send({ message: 'Error al eliminar comunicador de conferencias' });
+      
+                if (!eli)return res.status(404).send({ message: 'Usuario no encontrado' });
+                  
+                return res.status(200).send({ message: 'Usuario eliminado' });
+              })  
+            }
+
+            return res.status(200).send({ message: 'Usuario eliminado' });
+        })
     })
 }
 
-function listarcarrousels(req, res) {
+function listarComunicadores(req, res) {
 
 
-    Conferencista.find((err, carrousels)=>{
+    Conferencista.find((err, comunicadores)=>{
         if(err) return res.status(500).send({message: 'error en la peticion'});
 
-        if(!carrousels) return res.status(404).send({message: 'no se a podido eliminar el evento'});
+        if(!comunicadores) return res.status(404).send({message: 'no se a podido eliminar el evento'});
 
-        return res.status(200).send({carrousel: carrousels});
+        return res.status(200).send({carrousel: comunicadores});
+    })
+}
+
+function listarComunicador(req, res) {
+    var comId = req.params.id
+
+    Conferencista.findById(comId,(err, comunicador)=>{
+        if(err) return res.status(500).send({message: 'error en la peticion'});
+
+        if(!comunicador) return res.status(404).send({message: 'no se a podido eliminar el evento'});
+
+        return res.status(200).send({carrousel: comunicador});
     })
 }
 
@@ -149,10 +199,12 @@ function getImageFile(req, res) {
 }
 
 module.exports = {
-    registrarcarrousel,
-    editarcarrousel,
-    listarcarrousels,
-    eliminarcarrousel,
+    addConferencista,
+    editConferencista,
+    deleteConferencista,
+    listarComunicador,
+    listarComunicadores,
+    addRed,
     subirImagen,
     getImageFile
 }
