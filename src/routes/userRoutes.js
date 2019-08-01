@@ -25,6 +25,7 @@ api.get('/ejemplo', md_auth.ensureAuth, UserController.ejemplo);
 api.get('/usario/:id', md_auth.ensureAuth, UserController.getUser);
 api.get('/usuarios', UserController.getUsers);
 api.post('/registrar', UserController.registrar);
+api.delete('/eliminar/:id', UserController.eliminar);
 api.post('/login', UserController.login);
 api.post('/subir-imagen-usuario/:id', [md_auth.ensureAuth, md_subir], UserController.subirImagen);
 api.get('/obtener-imagen-usuario/:nombreImagen', UserController.obtenerImagen)
